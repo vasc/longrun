@@ -1,0 +1,5 @@
+Longrun is a python script that allows you to run several long running commands. 
+
+	longrun config.yml
+
+Programs are specified in a YAML configuration file. All are started at once and terminated with control-c.

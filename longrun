@@ -1,0 +1,40 @@
+#!/usr/bin/python
+
+import signal
+import subprocess
+import yaml
+import sys
+
+
+def start_process(line):
+    return subprocess.Popen(line, shell=True)
+
+def main():
+    def handler(signum, frame):
+        for t,p in ps.items():
+            if p.poll() == None:
+                p.terminate()
+    signal.signal(signal.SIGINT, handler)
+    signal.signal(signal.SIGTERM, handler)
+
+    if not len(sys.argv) == 2:
+        print """Usage: longrun TASKFILE"""
+        sys.exit(1)
+
+    with open(sys.argv[1]) as f:
+        tasks = yaml.load(f.read())
+
+    ps = {}
+    for t,v in tasks.items():
+        print 'Starting task: %s...' % t
+        ps[t] = start_process(v)
+
+    for t,p in ps.items():
+        p.wait()
+        print 'Task: %s has ended' % t
+
+
+
+if __name__ == '__main__':
+    main()
+
